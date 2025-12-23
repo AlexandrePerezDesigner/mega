@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Conferidor de Jogos</title>
+  <style>
+    body{
+      margin:0;
+      font-family: Inter, Arial, sans-serif;
+      background:#0b1020;
+      color:#e5e7eb;
+      display:flex;
+      justify-content:center;
+      padding:20px;
+    }
+    .app{
+      width:100%;
+      max-width:900px;
+      background:#121a33;
+      border-radius:16px;
+      padding:20px;
+    }
+    h1{margin:0 0 10px;font-size:20px}
+    p{margin:0 0 16px;color:#94a3b8;font-size:13px}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#cbd5e1;margin:8px 0 12px}
+    .legend span{display:flex;align-items:center;gap:6px}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .g{background:#22c55e}.b{background:#3b82f6}.y{background:#f59e0b}
+    .card.glow-blue{box-shadow:0 0 0 1px rgba(59,130,246,.5),0 0 18px rgba(59,130,246,.35)}
+    .card.glow-gold{box-shadow:0 0 0 1px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.45)}
+    .count{font-size:11px;color:#cbd5e1}
+    .ball.pop{animation:pop .2s ease-out}
+    @keyframes pop{from{transform:scale(.9)}to{transform:scale(1)}}
+    input{
+      padding:6px;
+      width:42px;
+      height:36px;
+      text-align:center;
+      border-radius:8px;
+      border:1px solid transparent;
+      outline:none;
+      font-size:13px;
+    }
+    .error-input{
+      border:1px solid #ef4444 !important;
+      box-shadow:0 0 0 1px rgba(239,68,68,.4);
+    }
+    button{
+      padding:12px 16px;
+      border-radius:12px;
+      border:none;
+      background:#22c55e;
+      color:#0b1020;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    .results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
+    
+    .player-name{width:100%;font-weight:800;color:#94a3b8;letter-spacing:.2px;margin-bottom:4px}
+    .player-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+    @media (max-width:760px){
+      .player-row{flex-direction:column;}
+    }
+      .player-name{margin-bottom:6px;}
+    }
+    .player-name{display:flex;align-items:center;font-weight:800;color:#94a3b8;letter-spacing:.2px}
+    .card{
+      background:#0b1020;
+      border-radius:12px;
+      padding:10px;
+      border:1px solid rgba(148,163,184,.18);
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .card:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(148,163,184,.18),0 10px 20px rgba(0,0,0,.25)}
+    .nums{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+    .ball{
+      width:32px;height:32px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:#1e293b;font-size:12px;font-weight:bold
+    }
+    .hit-green{background:#22c55e;color:#0b1020}
+    .hit-blue{background:#3b82f6;color:#0b1020}
+    .hit-gold{background:#f59e0b;color:#0b1020}
+    .card-head{display:flex;align-items:center;gap:8px}
+    .card-head small{color:#cbd5e1}
+    .spacer{flex:1}
+    .badge{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#cbd5e1}
+    .badge.quadra,.badge.quina{color:#93c5fd}
+    .badge.rico{color:#fcd34d}
+
+    /* Serpentinas (confetti) */
+    .confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:9999;
+    }
+    .confetti-piece{
+      position:absolute;
+      top:-12px;
+      width:10px;
+      height:18px;
+      border-radius:3px;
+      opacity:.95;
+      transform:rotate(0deg);
+      animation: confetti-fall var(--dur) linear forwards, confetti-sway var(--sway) ease-in-out infinite;
+    }
+    @keyframes confetti-fall{
+      to{ transform: translateY(110vh) rotate(720deg); }
+    }
+    @keyframes confetti-sway{
+      0%,100%{ margin-left:0; }
+      50%{ margin-left: var(--drift); }
+    }
+  </style>
+</head>
+<body>
+  <div class="confetti" id="confetti"></div>
+  <div class="app">
+    <h1>Conferidor de Jogos</h1>
+    <p>Digite 6 números e veja se batem com algum dos 39 jogos cadastrados.</p>
+
+    <div class="inputs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <input class="num" maxlength="2" placeholder="1" inputmode="numeric" />
+      <input class="num" maxlength="2" placeholder="2" inputmode="numeric" />
+      <input class="num" maxlength="2" placeholder="3" inputmode="numeric" />
+      <input class="num" maxlength="2" placeholder="4" inputmode="numeric" />
+      <input class="num" maxlength="2" placeholder="5" inputmode="numeric" />
+      <input class="num" maxlength="2" placeholder="6" inputmode="numeric" />
+    </div>
+    <div class="legend">
+      <span><i class="dot g"></i>1–3 acertos</span>
+      <span><i class="dot b"></i>Quadra / Quina</span>
+      <span><i class="dot y"></i>Sena</span>
+    </div>
+    <button onclick="check()">Verificar</button>
+    <button onclick="clearAll()" style="margin-left:8px;background:#334155;color:#e5e7eb">Limpar</button>
+    <div id="msg" style="margin-top:8px;color:#fca5a5;font-size:13px"></div>
+
+    <div class="results" id="results"></div>
+  </div>
+
+<script>
+const jogos = [
+ {p:'Nadine',j:1,n:[2,8,17,24,39,52]},
+ {p:'Nadine',j:2,n:[5,10,18,22,31,45]},
+ {p:'Nadine',j:3,n:[8,12,36,44,51,58]},
+ {p:'Tiago',j:1,n:[2,8,11,25,43,50]},
+ {p:'Tiago',j:2,n:[5,23,27,30,31,58]},
+ {p:'Tiago',j:3,n:[2,4,15,18,23,27]},
+ {p:'João',j:1,n:[5,7,29,34,48,59]},
+ {p:'João',j:2,n:[8,21,27,39,44,52]},
+ {p:'João',j:3,n:[12,19,30,37,49,60]},
+ {p:'Felipe',j:1,n:[4,11,22,30,44,50]},
+ {p:'Felipe',j:2,n:[10,13,17,28,34,37]},
+ {p:'Felipe',j:3,n:[2,5,8,11,25,30]},
+ {p:'Marcelo',j:1,n:[5,8,16,24,36,51]},
+ {p:'Marcelo',j:2,n:[6,15,21,33,42,58]},
+ {p:'Marcelo',j:3,n:[1,3,6,15,42,58]},
+ {p:'Tainah',j:1,n:[5,7,12,16,17,19]},
+ {p:'Tainah',j:2,n:[4,12,27,36,51,58]},
+ {p:'Tainah',j:3,n:[16,21,29,32,34,59]},
+ {p:'Rafael',j:1,n:[4,5,6,30,31,32]},
+ {p:'Rafael',j:2,n:[15,25,35,45,55,60]},
+ {p:'Rafael',j:3,n:[20,25,27,29,32,35]},
+ {p:'Taiane',j:1,n:[11,16,28,34,49,56]},
+ {p:'Taiane',j:2,n:[3,17,32,44,52,57]},
+ {p:'Taiane',j:3,n:[7,11,12,20,34,48]},
+ {p:'Leonardo',j:1,n:[3,13,22,25,41,48]},
+ {p:'Leonardo',j:2,n:[4,5,14,22,33,44]},
+ {p:'Leonardo',j:3,n:[7,11,22,33,43,52]},
+ {p:'Juliana',j:1,n:[5,9,15,27,44,58]},
+ {p:'Juliana',j:2,n:[1,3,22,40,49,52]},
+ {p:'Juliana',j:3,n:[2,7,10,15,43,57]},
+ {p:'Giovanna',j:1,n:[7,14,22,31,45,58]},
+ {p:'Giovanna',j:2,n:[3,19,27,36,44,60]},
+ {p:'Giovanna',j:3,n:[9,16,25,38,41,53]},
+ {p:'Caique',j:1,n:[1,3,9,14,26,41]},
+ {p:'Caique',j:2,n:[6,16,28,33,40,47]},
+ {p:'Caique',j:3,n:[1,3,29,35,36,46]},
+ {p:'Alexandre',j:1,n:[9,14,26,37,41,47]},
+ {p:'Alexandre',j:2,n:[6,16,28,33,40,46]},
+ {p:'Alexandre',j:3,n:[1,3,29,35,37,42]}
+];
+
+function renderAll(){
+ const res = document.getElementById('results');
+ res.innerHTML='';
+
+ const grouped = {};
+ jogos.forEach(j=>{
+   if(!grouped[j.p]) grouped[j.p]=[];
+   grouped[j.p].push(j);
+ });
+
+ Object.keys(grouped).forEach(pessoa=>{
+   const row=document.createElement('div');
+   row.className='player-row';
+
+   const name=document.createElement('div');
+   name.className='player-name';
+   name.textContent=pessoa;
+   row.appendChild(name);
+
+   grouped[pessoa].forEach(j=>{
+     const div=document.createElement('div');
+     div.className='card';
+     div.innerHTML=`<div class="card-head"><small>Jogo ${j.j}</small><span class="count"></span><span class="spacer"></span><span class="badge"></span></div>`;
+     const nums=document.createElement('div');nums.className='nums';
+     j.n.forEach(n=>{
+       const b=document.createElement('div');
+       b.className='ball';
+       b.textContent=n;nums.appendChild(b);
+     });
+     div.appendChild(nums);
+     row.appendChild(div);
+   });
+
+   res.appendChild(row);
+ });
+}
+
+function launchSerpentinas(){
+  const wrap = document.getElementById('confetti');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+
+  const count = 120;
+  const colors = ['#22c55e','#3b82f6','#f59e0b','#a78bfa','#f43f5e','#38bdf8','#f97316','#eab308'];
+
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const left = Math.random()*100;
+    const sizeW = 6 + Math.random()*10;
+    const sizeH = 10 + Math.random()*22;
+    const dur = 2.2 + Math.random()*1.8;
+    const sway = 0.6 + Math.random()*0.8;
+    const drift = (Math.random()>0.5?1:-1) * (10 + Math.random()*30);
+    const delay = Math.random()*0.25;
+
+    el.style.left = left + 'vw';
+    el.style.width = sizeW + 'px';
+    el.style.height = sizeH + 'px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDelay = delay + 's, 0s';
+    el.style.setProperty('--dur', dur + 's');
+    el.style.setProperty('--sway', sway + 's');
+    el.style.setProperty('--drift', drift + 'px');
+
+    wrap.appendChild(el);
+  }
+
+  // limpa depois
+  setTimeout(()=>{ wrap.innerHTML=''; }, 4200);
+}
+
+function check(){
+  const msg = document.getElementById('msg');
+  msg.textContent = '';
+
+  const inputs = Array.from(document.querySelectorAll('.num'));
+  inputs.forEach(i => i.classList.remove('error-input'));
+
+  const values = [];
+  const numsByIndex = [];
+  let hasEmpty = false;
+  let hasInvalid = false;
+
+  // 1) valida cada campo individualmente
+  inputs.forEach((inp, idx) => {
+    const raw = (inp.value || '').trim();
+
+    if (raw === '') {
+      hasEmpty = true;
+      numsByIndex[idx] = null;
+      inp.classList.add('error-input');
+      return;
+    }
+
+    if (!/^[0-9]+$/.test(raw)) {
+      hasInvalid = true;
+      numsByIndex[idx] = null;
+      inp.classList.add('error-input');
+      return;
+    }
+
+    const num = Number(raw);
+    if (num < 1 || num > 60) {
+      hasInvalid = true;
+      numsByIndex[idx] = null;
+      inp.classList.add('error-input');
+      return;
+    }
+
+    numsByIndex[idx] = num;
+    values.push(num);
+  });
+
+  // 2) checa repetidos (somente entre os válidos)
+  const counts = {};
+  numsByIndex.forEach(n => {
+    if (typeof n === 'number') counts[n] = (counts[n] || 0) + 1;
+  });
+
+  const duplicatedNums = Object.keys(counts)
+    .filter(k => counts[k] > 1)
+    .map(k => Number(k))
+    .sort((a,b) => a-b);
+
+  if (duplicatedNums.length > 0) {
+    numsByIndex.forEach((n, idx) => {
+      if (duplicatedNums.includes(n)) inputs[idx].classList.add('error-input');
+    });
+  }
+
+  // 3) mensagem (prioridade)
+  if (hasInvalid) {
+    msg.textContent = 'Por favor digite um número entre 1 e 60';
+    return;
+  }
+
+  if (hasEmpty) {
+    msg.textContent = 'Digite exatamente 6 números';
+    return;
+  }
+
+  if (duplicatedNums.length > 0) {
+    msg.textContent = 'Você repetiu o número ' + duplicatedNums.join(', ');
+    return;
+  }
+
+  // 4) tudo ok -> pinta acertos
+  // limpa hits/badges/contadores anteriores
+  document.querySelectorAll('.ball').forEach(b => b.classList.remove('hit-green','hit-blue','hit-gold','pop'));
+  document.querySelectorAll('.badge').forEach(b => { b.textContent=''; b.classList.remove('quadra','quina','rico'); });
+  document.querySelectorAll('.count').forEach(c => c.textContent='');
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('glow-blue','glow-gold'));
+
+  const cards = document.querySelectorAll('.card');
+  let jackpot = false;
+
+  jogos.forEach((j, idx) => {
+    const card = cards[idx];
+    const balls = card.querySelectorAll('.ball');
+    const badge = card.querySelector('.badge');
+    const countEl = card.querySelector('.count');
+
+    // conta acertos
+    let hitCount = 0;
+    balls.forEach(ball => {
+      const n = Number(ball.textContent);
+      if (values.includes(n)) hitCount++;
+    });
+
+    // mostra contador
+    if (countEl) countEl.textContent = hitCount + '/6';
+
+    // define estilo do acerto
+    let hitClass = 'hit-green';
+    if (hitCount === 6) { hitClass = 'hit-gold'; jackpot = true; card.classList.add('glow-gold'); }
+    else if (hitCount === 5 || hitCount === 4) { hitClass = 'hit-blue'; card.classList.add('glow-blue'); }
+
+    // aplica classe apenas nas bolinhas acertadas
+    balls.forEach(ball => {
+      const n = Number(ball.textContent);
+      if (values.includes(n)) ball.classList.add(hitClass,'pop');
+    });
+
+    // mensagem ao lado do jogo
+    if (hitCount === 4) {
+      badge.textContent = 'FEZ A QUADRA';
+      badge.classList.add('quadra');
+    } else if (hitCount === 5) {
+      badge.textContent = 'FEZ A QUINA';
+      badge.classList.add('quina');
+    } else if (hitCount === 6) {
+      badge.textContent = 'FICOU RICO GAROUUUTO';
+      badge.classList.add('rico');
+    }
+  });
+
+  if(jackpot) launchSerpentinas();
+}
+
+renderAll();
+
+function clearAll(){
+  document.querySelectorAll('.num').forEach(i=>{ i.value=''; i.classList.remove('error-input'); });
+  document.getElementById('msg').textContent='';
+  document.querySelectorAll('.ball').forEach(b=>b.classList.remove('hit-green','hit-blue','hit-gold','pop'));
+  document.querySelectorAll('.badge').forEach(b=>{b.textContent='';b.classList.remove('quadra','quina','rico');});
+  document.querySelectorAll('.count').forEach(c=>c.textContent='');
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('glow-blue','glow-gold'));
+  const conf=document.getElementById('confetti');
+  if(conf) conf.innerHTML='';
+}
+
+// auto-avanço e somente números
+Array.from(document.querySelectorAll('.num')).forEach((inp, idx, arr) => {
+  inp.addEventListener('input', () => {
+    inp.value = inp.value.replace(/[^0-9]/g, '');
+    if (inp.value.length === 2 && arr[idx+1]) arr[idx+1].focus();
+  });
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && inp.value === '' && arr[idx-1]) arr[idx-1].focus();
+    if (e.key === 'Enter') check();
+  });
+});
+</script>
+</body>
+</html>
