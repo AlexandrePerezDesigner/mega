@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Conferidor de Jogos</title>
+  <title>Tribe - Conferidor de Jogos</title>
   <style>
     body{
       margin:0;
@@ -23,15 +23,12 @@
     }
     h1{margin:0 0 10px;font-size:20px}
     p{margin:0 0 16px;color:#94a3b8;font-size:13px}
+
     .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#cbd5e1;margin:8px 0 12px}
     .legend span{display:flex;align-items:center;gap:6px}
     .dot{width:10px;height:10px;border-radius:50%}
     .g{background:#22c55e}.b{background:#3b82f6}.y{background:#f59e0b}
-    .card.glow-blue{box-shadow:0 0 0 1px rgba(59,130,246,.5),0 0 18px rgba(59,130,246,.35)}
-    .card.glow-gold{box-shadow:0 0 0 1px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.45)}
-    .count{font-size:11px;color:#cbd5e1}
-    .ball.pop{animation:pop .2s ease-out}
-    @keyframes pop{from{transform:scale(.9)}to{transform:scale(1)}}
+
     input{
       padding:6px;
       width:42px;
@@ -46,6 +43,7 @@
       border:1px solid #ef4444 !important;
       box-shadow:0 0 0 1px rgba(239,68,68,.4);
     }
+
     button{
       padding:12px 16px;
       border-radius:12px;
@@ -55,36 +53,50 @@
       font-weight:bold;
       cursor:pointer;
     }
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+    .controls label{font-size:12px;color:#cbd5e1}
+    select{background:#0b1020;color:#e5e7eb;border:1px solid rgba(148,163,184,.25);border-radius:10px;padding:10px 12px;outline:none}
+    .hint{font-size:12px;color:#94a3b8}
+
     .results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
-    
-    .player-name{width:100%;font-weight:800;color:#94a3b8;letter-spacing:.2px;margin-bottom:4px}
     .player-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+    .player-name{width:100%;font-weight:800;color:#94a3b8;letter-spacing:.2px;margin-bottom:4px}
+
     @media (max-width:760px){
       .player-row{flex-direction:column;}
-    }
       .player-name{margin-bottom:6px;}
     }
-    .player-name{display:flex;align-items:center;font-weight:800;color:#94a3b8;letter-spacing:.2px}
+
     .card{
       background:#0b1020;
       border-radius:12px;
       padding:10px;
       border:1px solid rgba(148,163,184,.18);
-      transition:transform .15s ease, box-shadow .15s ease;
     }
-    .card:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(148,163,184,.18),0 10px 20px rgba(0,0,0,.25)}
+
     .nums{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
     .ball{
       width:32px;height:32px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;
       background:#1e293b;font-size:12px;font-weight:bold
     }
+
     .hit-green{background:#22c55e;color:#0b1020}
     .hit-blue{background:#3b82f6;color:#0b1020}
     .hit-gold{background:#f59e0b;color:#0b1020}
+
+    .card.glow-blue{box-shadow:0 0 0 1px rgba(59,130,246,.5),0 0 18px rgba(59,130,246,.35)}
+    .card.glow-gold{box-shadow:0 0 0 1px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.45)}
+
+    .ball.pop{animation:pop .2s ease-out}
+    @keyframes pop{from{transform:scale(.9)}to{transform:scale(1)}}
+
+    .count{font-size:11px;color:#cbd5e1}
+
     .card-head{display:flex;align-items:center;gap:8px}
-    .card-head small{color:#cbd5e1}
     .spacer{flex:1}
+
     .badge{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#cbd5e1}
     .badge.quadra,.badge.quina{color:#93c5fd}
     .badge.rico{color:#fcd34d}
@@ -107,20 +119,16 @@
       transform:rotate(0deg);
       animation: confetti-fall var(--dur) linear forwards, confetti-sway var(--sway) ease-in-out infinite;
     }
-    @keyframes confetti-fall{
-      to{ transform: translateY(110vh) rotate(720deg); }
-    }
-    @keyframes confetti-sway{
-      0%,100%{ margin-left:0; }
-      50%{ margin-left: var(--drift); }
-    }
+    @keyframes confetti-fall{ to{ transform: translateY(110vh) rotate(720deg); } }
+    @keyframes confetti-sway{ 0%,100%{ margin-left:0; } 50%{ margin-left: var(--drift); } }
   </style>
 </head>
 <body>
   <div class="confetti" id="confetti"></div>
+
   <div class="app">
     <h1>Conferidor de Jogos</h1>
-    <p>Digite 6 números e veja se batem com algum dos 39 jogos cadastrados.</p>
+    <p>Digite 6 números e veja se batem com algum dos jogos cadastrados.</p>
 
     <div class="inputs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
       <input class="num" maxlength="2" placeholder="1" inputmode="numeric" />
@@ -130,109 +138,181 @@
       <input class="num" maxlength="2" placeholder="5" inputmode="numeric" />
       <input class="num" maxlength="2" placeholder="6" inputmode="numeric" />
     </div>
+
     <div class="legend">
       <span><i class="dot g"></i>1–3 acertos</span>
       <span><i class="dot b"></i>Quadra / Quina</span>
       <span><i class="dot y"></i>Sena</span>
     </div>
+
     <button onclick="check()">Verificar</button>
     <button onclick="clearAll()" style="margin-left:8px;background:#334155;color:#e5e7eb">Limpar</button>
-    <div id="msg" style="margin-top:8px;color:#fca5a5;font-size:13px"></div>
 
+    <div class="controls">
+      <label>Visualização:
+        <select id="viewMode">
+          <option value="group" selected>Agrupado por pessoa</option>
+          <option value="rank">Ranking (mais acertos primeiro)</option>
+        </select>
+      </label>
+      <label>Mostrar a partir de:
+        <select id="minHits">
+          <option value="0" selected>0 acertos</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </label>
+      <span class="hint">(Funciona após clicar em Verificar)</span>
+    </div>
+
+    <div id="msg" style="margin-top:8px;color:#fca5a5;font-size:13px"></div>
     <div class="results" id="results"></div>
   </div>
 
 <script>
 const jogos = [
- {p:'Nadine',j:1,n:[2,8,17,24,39,52]},
- {p:'Nadine',j:2,n:[5,10,18,22,31,45]},
- {p:'Nadine',j:3,n:[8,12,36,44,51,58]},
- {p:'Tiago',j:1,n:[2,8,11,25,43,50]},
- {p:'Tiago',j:2,n:[5,23,27,30,31,58]},
- {p:'Tiago',j:3,n:[2,4,15,18,23,27]},
- {p:'João',j:1,n:[5,7,29,34,48,59]},
- {p:'João',j:2,n:[8,21,27,39,44,52]},
- {p:'João',j:3,n:[12,19,30,37,49,60]},
- {p:'Felipe',j:1,n:[4,11,22,30,44,50]},
- {p:'Felipe',j:2,n:[10,13,17,28,34,37]},
- {p:'Felipe',j:3,n:[2,5,8,11,25,30]},
- {p:'Marcelo',j:1,n:[5,8,16,24,36,51]},
- {p:'Marcelo',j:2,n:[6,15,21,33,42,58]},
- {p:'Marcelo',j:3,n:[1,3,6,15,42,58]},
- {p:'Tainah',j:1,n:[5,7,12,16,17,19]},
- {p:'Tainah',j:2,n:[4,12,27,36,51,58]},
- {p:'Tainah',j:3,n:[16,21,29,32,34,59]},
- {p:'Rafael',j:1,n:[4,5,6,30,31,32]},
- {p:'Rafael',j:2,n:[15,25,35,45,55,60]},
- {p:'Rafael',j:3,n:[20,25,27,29,32,35]},
- {p:'Taiane',j:1,n:[11,16,28,34,49,56]},
- {p:'Taiane',j:2,n:[3,17,32,44,52,57]},
- {p:'Taiane',j:3,n:[7,11,12,20,34,48]},
- {p:'Leonardo',j:1,n:[3,13,22,25,41,48]},
- {p:'Leonardo',j:2,n:[4,5,14,22,33,44]},
- {p:'Leonardo',j:3,n:[7,11,22,33,43,52]},
- {p:'Juliana',j:1,n:[5,9,15,27,44,58]},
- {p:'Juliana',j:2,n:[1,3,22,40,49,52]},
- {p:'Juliana',j:3,n:[2,7,10,15,43,57]},
- {p:'Giovanna',j:1,n:[7,14,22,31,45,58]},
- {p:'Giovanna',j:2,n:[3,19,27,36,44,60]},
- {p:'Giovanna',j:3,n:[9,16,25,38,41,53]},
- {p:'Caique',j:1,n:[1,3,9,14,26,41]},
- {p:'Caique',j:2,n:[6,16,28,33,40,47]},
- {p:'Caique',j:3,n:[1,3,29,35,36,46]},
- {p:'Alexandre',j:1,n:[9,14,26,37,41,47]},
- {p:'Alexandre',j:2,n:[6,16,28,33,40,46]},
- {p:'Alexandre',j:3,n:[1,3,29,35,37,42]}
+  {p:'Nadine',j:1,n:[2,8,17,24,39,52]},
+  {p:'Nadine',j:2,n:[5,10,18,22,31,45]},
+  {p:'Nadine',j:3,n:[8,12,36,44,51,58]},
+  {p:'Tiago',j:1,n:[2,8,11,25,43,50]},
+  {p:'Tiago',j:2,n:[5,23,27,30,31,58]},
+  {p:'Tiago',j:3,n:[2,4,15,18,23,27]},
+  {p:'João',j:1,n:[5,7,29,34,48,59]},
+  {p:'João',j:2,n:[8,21,27,39,44,52]},
+  {p:'João',j:3,n:[12,19,30,37,49,60]},
+  {p:'Felipe',j:1,n:[4,11,22,30,44,50]},
+  {p:'Felipe',j:2,n:[10,13,17,28,34,37]},
+  {p:'Felipe',j:3,n:[2,5,8,11,25,30]},
+  {p:'Marcelo',j:1,n:[5,8,16,24,36,51]},
+  {p:'Marcelo',j:2,n:[6,15,21,33,42,58]},
+  {p:'Marcelo',j:3,n:[1,3,6,15,42,58]},
+  {p:'Tainah',j:1,n:[5,7,12,16,17,19]},
+  {p:'Tainah',j:2,n:[4,12,27,36,51,58]},
+  {p:'Tainah',j:3,n:[16,21,29,32,34,59]},
+  {p:'Rafael',j:1,n:[4,5,6,30,31,32]},
+  {p:'Rafael',j:2,n:[15,25,35,45,55,60]},
+  {p:'Rafael',j:3,n:[20,25,27,29,32,35]},
+  {p:'Taiane',j:1,n:[11,16,28,34,49,56]},
+  {p:'Taiane',j:2,n:[3,17,32,44,52,57]},
+  {p:'Taiane',j:3,n:[7,11,12,20,34,48]},
+  {p:'Leonardo',j:1,n:[3,13,22,25,41,48]},
+  {p:'Leonardo',j:2,n:[4,5,14,22,33,44]},
+  {p:'Leonardo',j:3,n:[7,11,22,33,43,52]},
+  {p:'Juliana',j:1,n:[5,9,15,27,44,58]},
+  {p:'Juliana',j:2,n:[1,3,22,40,49,52]},
+  {p:'Juliana',j:3,n:[2,7,10,15,43,57]},
+  {p:'Giovanna',j:1,n:[7,14,22,31,45,58]},
+  {p:'Giovanna',j:2,n:[3,19,27,36,44,60]},
+  {p:'Giovanna',j:3,n:[9,16,25,38,41,53]},
+  {p:'Caique',j:1,n:[1,3,9,14,26,41]},
+  {p:'Caique',j:2,n:[6,16,28,33,40,47]},
+  {p:'Caique',j:3,n:[1,3,29,35,36,46]},
+  {p:'Alexandre',j:1,n:[9,14,26,37,41,47]},
+  {p:'Alexandre',j:2,n:[6,16,28,33,40,46]},
+  {p:'Alexandre',j:3,n:[1,3,29,35,37,42]},
 ];
 
+let hasChecked = false;
+let lastValues = null; // último conjunto de 6 números
+let hitsByIndex = Array(jogos.length).fill(0);
+
+function computeHits(gameNums, values){
+  let hits = 0;
+  for(const n of gameNums){
+    if(values.includes(n)) hits++;
+  }
+  return hits;
+}
+
+function buildCardHTML(title){
+  return `<div class="card-head"><small>${title}</small><span class="count"></span><span class="spacer"></span><span class="badge"></span></div>`;
+}
+
 function renderAll(){
- const res = document.getElementById('results');
- res.innerHTML='';
+  const res = document.getElementById('results');
+  res.innerHTML = '';
 
- const grouped = {};
- jogos.forEach(j=>{
-   if(!grouped[j.p]) grouped[j.p]=[];
-   grouped[j.p].push(j);
- });
+  const grouped = {};
+  jogos.forEach((j, idx) => {
+    if(!grouped[j.p]) grouped[j.p] = [];
+    grouped[j.p].push({j, idx});
+  });
 
- Object.keys(grouped).forEach(pessoa=>{
-   const row=document.createElement('div');
-   row.className='player-row';
+  Object.keys(grouped).forEach(pessoa => {
+    const row = document.createElement('div');
+    row.className = 'player-row';
 
-   const name=document.createElement('div');
-   name.className='player-name';
-   name.textContent=pessoa;
-   row.appendChild(name);
+    const name = document.createElement('div');
+    name.className = 'player-name';
+    name.textContent = pessoa;
+    row.appendChild(name);
 
-   grouped[pessoa].forEach(j=>{
-     const div=document.createElement('div');
-     div.className='card';
-     div.innerHTML=`<div class="card-head"><small>Jogo ${j.j}</small><span class="count"></span><span class="spacer"></span><span class="badge"></span></div>`;
-     const nums=document.createElement('div');nums.className='nums';
-     j.n.forEach(n=>{
-       const b=document.createElement('div');
-       b.className='ball';
-       b.textContent=n;nums.appendChild(b);
-     });
-     div.appendChild(nums);
-     row.appendChild(div);
-   });
+    grouped[pessoa].forEach(({j, idx}) => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.dataset.idx = String(idx);
+      div.innerHTML = buildCardHTML(`Jogo ${j.j}`);
 
-   res.appendChild(row);
- });
+      const nums = document.createElement('div');
+      nums.className = 'nums';
+      j.n.forEach(n => {
+        const b = document.createElement('div');
+        b.className = 'ball';
+        b.textContent = n;
+        nums.appendChild(b);
+      });
+      div.appendChild(nums);
+      row.appendChild(div);
+    });
+
+    res.appendChild(row);
+  });
+}
+
+function renderRanking(minHits){
+  const res = document.getElementById('results');
+  res.innerHTML='';
+
+  const items = jogos
+    .map((j, idx) => ({ j, idx, hits: hitsByIndex[idx] || 0 }))
+    .filter(it => it.hits >= minHits)
+    .sort((a,b) => b.hits - a.hits);
+
+  items.forEach(it => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.dataset.idx = String(it.idx);
+    div.innerHTML = buildCardHTML(`${it.j.p} — Jogo ${it.j.j}`);
+
+    const nums = document.createElement('div');
+    nums.className = 'nums';
+    it.j.n.forEach(n => {
+      const b = document.createElement('div');
+      b.className='ball';
+      b.textContent = n;
+      nums.appendChild(b);
+    });
+    div.appendChild(nums);
+    res.appendChild(div);
+  });
 }
 
 function launchSerpentinas(){
   const wrap = document.getElementById('confetti');
   if(!wrap) return;
-  wrap.innerHTML = '';
+  wrap.innerHTML='';
 
   const count = 120;
   const colors = ['#22c55e','#3b82f6','#f59e0b','#a78bfa','#f43f5e','#38bdf8','#f97316','#eab308'];
 
   for(let i=0;i<count;i++){
     const el = document.createElement('div');
-    el.className = 'confetti-piece';
+    el.className='confetti-piece';
+
     const left = Math.random()*100;
     const sizeW = 6 + Math.random()*10;
     const sizeH = 10 + Math.random()*22;
@@ -253,8 +333,74 @@ function launchSerpentinas(){
     wrap.appendChild(el);
   }
 
-  // limpa depois
   setTimeout(()=>{ wrap.innerHTML=''; }, 4200);
+}
+
+function paint(values){
+  // limpa estilos anteriores
+  document.querySelectorAll('.ball').forEach(b => b.classList.remove('hit-green','hit-blue','hit-gold','pop'));
+  document.querySelectorAll('.badge').forEach(b => { b.textContent=''; b.classList.remove('quadra','quina','rico'); });
+  document.querySelectorAll('.count').forEach(c => c.textContent='');
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('glow-blue','glow-gold'));
+
+  let jackpot=false;
+
+  document.querySelectorAll('.card').forEach(card => {
+    const idx = Number(card.dataset.idx);
+    const jogo = jogos[idx];
+    if(!jogo) return;
+
+    const hitCount = computeHits(jogo.n, values);
+    hitsByIndex[idx] = hitCount;
+
+    const balls = card.querySelectorAll('.ball');
+    const badge = card.querySelector('.badge');
+    const countEl = card.querySelector('.count');
+
+    if(countEl) countEl.textContent = hitCount + '/6';
+
+    let hitClass='hit-green';
+    if(hitCount === 6){ hitClass='hit-gold'; jackpot=true; card.classList.add('glow-gold'); }
+    else if(hitCount === 5 || hitCount === 4){ hitClass='hit-blue'; card.classList.add('glow-blue'); }
+
+    balls.forEach(ball => {
+      const n = Number(ball.textContent);
+      if(values.includes(n)) ball.classList.add(hitClass,'pop');
+    });
+
+    if(hitCount === 4){ badge.textContent='FEZ A QUADRA'; badge.classList.add('quadra'); }
+    else if(hitCount === 5){ badge.textContent='FEZ A QUINA'; badge.classList.add('quina'); }
+    else if(hitCount === 6){ badge.textContent='FICOU RICO GAROUUUTO'; badge.classList.add('rico'); }
+  });
+
+  if(jackpot) launchSerpentinas();
+}
+
+function applyView(){
+  const mode = document.getElementById('viewMode')?.value || 'group';
+  const minHits = Number(document.getElementById('minHits')?.value || 0);
+
+  if(!hasChecked || !lastValues){
+    renderAll();
+    return;
+  }
+
+  // re-render conforme modo
+  if(mode === 'rank'){
+    renderRanking(minHits);
+    paint(lastValues);
+    return;
+  }
+
+  renderAll();
+  paint(lastValues);
+
+  // filtra (mantém agrupado por pessoa)
+  document.querySelectorAll('.card').forEach(card => {
+    const idx = Number(card.dataset.idx);
+    const h = hitsByIndex[idx] || 0;
+    if(h < minHits) card.style.display = 'none';
+  });
 }
 
 function check(){
@@ -266,21 +412,20 @@ function check(){
 
   const values = [];
   const numsByIndex = [];
-  let hasEmpty = false;
-  let hasInvalid = false;
+  let hasEmpty=false;
+  let hasInvalid=false;
 
-  // 1) valida cada campo individualmente
   inputs.forEach((inp, idx) => {
     const raw = (inp.value || '').trim();
 
-    if (raw === '') {
+    if(raw === ''){
       hasEmpty = true;
       numsByIndex[idx] = null;
       inp.classList.add('error-input');
       return;
     }
 
-    if (!/^[0-9]+$/.test(raw)) {
+    if(!/^[0-9]+$/.test(raw)){
       hasInvalid = true;
       numsByIndex[idx] = null;
       inp.classList.add('error-input');
@@ -288,7 +433,7 @@ function check(){
     }
 
     const num = Number(raw);
-    if (num < 1 || num > 60) {
+    if(num < 1 || num > 60){
       hasInvalid = true;
       numsByIndex[idx] = null;
       inp.classList.add('error-input');
@@ -299,116 +444,71 @@ function check(){
     values.push(num);
   });
 
-  // 2) checa repetidos (somente entre os válidos)
+  // repetidos (marca TODOS os repetidos)
   const counts = {};
   numsByIndex.forEach(n => {
-    if (typeof n === 'number') counts[n] = (counts[n] || 0) + 1;
+    if(typeof n === 'number') counts[n] = (counts[n] || 0) + 1;
   });
-
-  const duplicatedNums = Object.keys(counts)
-    .filter(k => counts[k] > 1)
-    .map(k => Number(k))
-    .sort((a,b) => a-b);
-
-  if (duplicatedNums.length > 0) {
-    numsByIndex.forEach((n, idx) => {
-      if (duplicatedNums.includes(n)) inputs[idx].classList.add('error-input');
+  const duplicatedNums = Object.keys(counts).filter(k => counts[k] > 1).map(Number).sort((a,b)=>a-b);
+  if(duplicatedNums.length){
+    numsByIndex.forEach((n, i) => {
+      if(duplicatedNums.includes(n)) inputs[i].classList.add('error-input');
     });
   }
 
-  // 3) mensagem (prioridade)
-  if (hasInvalid) {
-    msg.textContent = 'Por favor digite um número entre 1 e 60';
-    return;
-  }
+  if(hasInvalid){ msg.textContent='Por favor digite um número entre 1 e 60'; return; }
+  if(hasEmpty){ msg.textContent='Digite exatamente 6 números'; return; }
+  if(duplicatedNums.length){ msg.textContent='Você repetiu o número ' + duplicatedNums.join(', '); return; }
 
-  if (hasEmpty) {
-    msg.textContent = 'Digite exatamente 6 números';
-    return;
-  }
+  hasChecked = true;
+  lastValues = values.slice();
+  hitsByIndex = jogos.map(j => computeHits(j.n, lastValues));
 
-  if (duplicatedNums.length > 0) {
-    msg.textContent = 'Você repetiu o número ' + duplicatedNums.join(', ');
-    return;
-  }
-
-  // 4) tudo ok -> pinta acertos
-  // limpa hits/badges/contadores anteriores
-  document.querySelectorAll('.ball').forEach(b => b.classList.remove('hit-green','hit-blue','hit-gold','pop'));
-  document.querySelectorAll('.badge').forEach(b => { b.textContent=''; b.classList.remove('quadra','quina','rico'); });
-  document.querySelectorAll('.count').forEach(c => c.textContent='');
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('glow-blue','glow-gold'));
-
-  const cards = document.querySelectorAll('.card');
-  let jackpot = false;
-
-  jogos.forEach((j, idx) => {
-    const card = cards[idx];
-    const balls = card.querySelectorAll('.ball');
-    const badge = card.querySelector('.badge');
-    const countEl = card.querySelector('.count');
-
-    // conta acertos
-    let hitCount = 0;
-    balls.forEach(ball => {
-      const n = Number(ball.textContent);
-      if (values.includes(n)) hitCount++;
-    });
-
-    // mostra contador
-    if (countEl) countEl.textContent = hitCount + '/6';
-
-    // define estilo do acerto
-    let hitClass = 'hit-green';
-    if (hitCount === 6) { hitClass = 'hit-gold'; jackpot = true; card.classList.add('glow-gold'); }
-    else if (hitCount === 5 || hitCount === 4) { hitClass = 'hit-blue'; card.classList.add('glow-blue'); }
-
-    // aplica classe apenas nas bolinhas acertadas
-    balls.forEach(ball => {
-      const n = Number(ball.textContent);
-      if (values.includes(n)) ball.classList.add(hitClass,'pop');
-    });
-
-    // mensagem ao lado do jogo
-    if (hitCount === 4) {
-      badge.textContent = 'FEZ A QUADRA';
-      badge.classList.add('quadra');
-    } else if (hitCount === 5) {
-      badge.textContent = 'FEZ A QUINA';
-      badge.classList.add('quina');
-    } else if (hitCount === 6) {
-      badge.textContent = 'FICOU RICO GAROUUUTO';
-      badge.classList.add('rico');
-    }
-  });
-
-  if(jackpot) launchSerpentinas();
+  applyView();
 }
 
-renderAll();
-
 function clearAll(){
-  document.querySelectorAll('.num').forEach(i=>{ i.value=''; i.classList.remove('error-input'); });
+  document.querySelectorAll('.num').forEach(i => { i.value=''; i.classList.remove('error-input'); });
   document.getElementById('msg').textContent='';
-  document.querySelectorAll('.ball').forEach(b=>b.classList.remove('hit-green','hit-blue','hit-gold','pop'));
-  document.querySelectorAll('.badge').forEach(b=>{b.textContent='';b.classList.remove('quadra','quina','rico');});
-  document.querySelectorAll('.count').forEach(c=>c.textContent='');
-  document.querySelectorAll('.card').forEach(c=>c.classList.remove('glow-blue','glow-gold'));
-  const conf=document.getElementById('confetti');
+
+  hasChecked = false;
+  lastValues = null;
+  hitsByIndex = Array(jogos.length).fill(0);
+
+  const conf = document.getElementById('confetti');
   if(conf) conf.innerHTML='';
+
+  applyView();
 }
 
 // auto-avanço e somente números
 Array.from(document.querySelectorAll('.num')).forEach((inp, idx, arr) => {
   inp.addEventListener('input', () => {
-    inp.value = inp.value.replace(/[^0-9]/g, '');
-    if (inp.value.length === 2 && arr[idx+1]) arr[idx+1].focus();
+    inp.value = inp.value.replace(/[^0-9]/g,'');
+    if(inp.value.length === 2 && arr[idx+1]) arr[idx+1].focus();
   });
   inp.addEventListener('keydown', (e) => {
-    if (e.key === 'Backspace' && inp.value === '' && arr[idx-1]) arr[idx-1].focus();
-    if (e.key === 'Enter') check();
+    if(e.key === 'Backspace' && inp.value === '' && arr[idx-1]) arr[idx-1].focus();
+    if(e.key === 'Enter') check();
   });
 });
+
+// listeners (filtros)
+document.getElementById('viewMode').addEventListener('change', applyView);
+document.getElementById('minHits').addEventListener('change', applyView);
+
+// tests simples (console)
+(function runTests(){
+  const assert = (cond, msg) => { if(!cond) console.error('Teste falhou:', msg); };
+  // 6 acertos no primeiro jogo da Nadine
+  assert(computeHits(jogos[0].n, [2,8,17,24,39,52]) === 6, 'hits = 6 quando números iguais');
+  // 0 acertos com conjunto fora
+  assert(computeHits(jogos[0].n, [1,6,7,9,10,11]) === 0, 'hits = 0 quando não bate');
+  // 3 acertos
+  assert(computeHits([1,2,3,4,5,6], [2,4,6,10,11,12]) === 3, 'hits = 3 correto');
+})();
+
+applyView();
 </script>
 </body>
 </html>
